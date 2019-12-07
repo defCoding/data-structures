@@ -5,7 +5,7 @@
 
 #define ALPHABET_SIZE 26
 #define MAX_STRING_SIZE 100
-#define STRING_FORMAT_SPECIFIER "%100s"
+#define STRING_FORMAT_SPECIFIER "%99s"
 
 int get_char_index(char c);
 struct TrieNode * create_node();
@@ -24,62 +24,70 @@ struct TrieNode {
 };
 
 int main() {
-    int count;
-
-    printf("How many words do you want to insert? ");
-    scanf("%d", &count);
-
     struct TrieNode * root = create_node();
-    int i;
-    for (i = 0; i < count; i++) {
-        char str[MAX_STRING_SIZE];
-        scanf(STRING_FORMAT_SPECIFIER, str);
-        insert(root, str);
-    }
+    bool quit = false;
+    
+    while (!quit) {
+      printf("Trie Menu\n---------\n1. Insert\n2. Search\n3. Delete\n4. Autocomplete\n5. Display\n6. Quit\nChoose an option: ");
 
-    printf("How many searches do you want to do? ");
-    int searches;
-    scanf("%d", &searches);
+      int choice;
+      scanf("%d", &choice);
 
-    for (i = 0; i < searches; i++) {
-        char str[MAX_STRING_SIZE];
-        scanf(STRING_FORMAT_SPECIFIER, str);
-        printf(search(root, str) ? "true\n" : "false\n");
-    }
+      char str[MAX_STRING_SIZE];
+      
+      switch (choice) {
+        case 1:
+          printf("Word to insert: ");
+          scanf(STRING_FORMAT_SPECIFIER, str);
+          insert(root, str);
+          break;
+        case 2:
+          printf("Word to search: ");
+          scanf(STRING_FORMAT_SPECIFIER, str);
+          printf(search(root, str) ? "\ntrue\n" : "\nfalse\n");
+          break;
+        case 3:
+          printf("Word to delete: ");
+          scanf(STRING_FORMAT_SPECIFIER, str);
+          root = delete(root, str);
+          break;
+        case 4:
+          printf("Autocomplete phrase: ");
+          scanf(STRING_FORMAT_SPECIFIER, str);
+          int len = 18 + strlen(str);
+          printf("\nStrings that match %s\n", str);
 
-    printf("How many deletions do you want to do? ");
-    int deletions;
-    scanf("%d", &deletions);
+          int i;
+          for (i = 0; i < len; i++) {
+            printf("-");
+          }
+          printf("\n");
 
-    for (i = 0; i < deletions; i++) {
-        char str[MAX_STRING_SIZE];
-        scanf(STRING_FORMAT_SPECIFIER, str);
-        root = delete(root, str);
-    }
+          autocomplete(root, str);
 
-    printf("How many searches do you want to do? ");
-    scanf("%d", &searches);
+          for (i = 0; i < len; i++) {
+            printf("-");
+          }
+          printf("\n");
+          break;
+        case 5:
+          printf("\nContents of Trie\n----------------\n");
+          display(root);
+          break;
+        case 6:
+          quit = true;
+          printf("Quitting...\n");
+          break;
+        default:
+          printf("Not a valid operation.\n\n");
+          break;
+      }
 
-    for (i = 0; i < searches; i++) {
-        char str[MAX_STRING_SIZE];
-        scanf(STRING_FORMAT_SPECIFIER, str);
-        printf(search(root, str) ? "true\n" : "false\n");
-    }
-
-    printf("Strings currently in trie:\n");
-    display(root);
-
-    int autorequests;
-
-    printf("How many autocomplete requests do you want to do? ");
-    scanf("%d", &autorequests);
-
-    for (i = 0; i < autorequests; i++) {
-        char str[MAX_STRING_SIZE];
-        scanf(STRING_FORMAT_SPECIFIER, str);
-        printf("Strings that match %s\n===================\n", str);
-        autocomplete(root, str);
-        printf("===================\n");
+      if (!quit) {
+        printf("\nPress enter to continue...\n");
+        getchar();
+        while (getchar() != '\n');
+      }
     }
     return 0;
 }
